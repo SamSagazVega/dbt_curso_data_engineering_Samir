@@ -1,0 +1,35 @@
+version: 2
+
+sources:
+
+  - name: google_sheets # name of the source 
+    schema: google_sheets # this is the schema our raw data lives in
+    database: dev_bronze_db_alumno_16 # this is the name of our database
+
+    quoting:
+      database: false
+      schema: false
+      identifier: false
+
+    freshness:
+      warn_after: {count: 24, period: hour}
+      error_after: {count: 48, period: hour}
+
+    tables:
+
+      - name: budget
+        loaded_at_field: _fivetran_synced
+        columns:
+          - name: _row
+            tests:
+              - unique
+              - not_null
+          - name: product_id
+            tests:
+              - unique
+              - relationships:
+                  to: source('postgres_public','products')
+                  field: id
+          - name: quantity
+          - name: month
+          - name: _fivetran_synced
