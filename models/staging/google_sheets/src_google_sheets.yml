@@ -1,0 +1,60 @@
+version: 2
+
+sources:
+
+  - name: google_sheets  
+    schema: google_sheets
+    database: |  
+        {%- if  target.name == 'user_dev' -%} dev_bronze_db_alumno_16 
+        {%- elif target.name == 'ci' -%} dev_bronze_db_alumno_16 
+        {%- elif target.name == 'pro'-%} pro_bronze_db_alumno_16  
+        {%- else -%} {{target.database}}_bronze_db_alumno_16 
+        {%- endif -%} 
+
+    quoting:
+      database: false
+      schema: false
+      identifier: false
+
+    freshness:
+      warn_after: {count: 24, period: hour}
+      error_after: {count: 48, period: hour}
+
+    tables:
+
+      - name: budget
+        loaded_at_field: _fivetran_synced
+        description: >
+          Datos sobre el presupuesto.
+        columns:
+          - name: _row
+            description: >
+              Numero de fila de google sheet.
+            tests:
+              - not_null
+              - unique
+              - positive_values
+          - name: product_id
+            description: >
+              UUID para cada producto de la plataforma.
+            tests:
+              - not_null
+              - relationships:
+                  to: source('sql_server__dbo','products')
+                  field: product_id
+          - name: quantity
+            description: >
+              Numero de unidades por producto y mes (febrero y marzo).
+            tests:
+              - not_null
+              - positive_values
+          - name: month
+            description: >
+              Cada mes para el presupuesto.
+            tests:
+              - not_null
+          - name: _fivetran_synced
+            description: >
+              Fecha en la que los datos fueron cargados.
+            tests:
+              - not_null

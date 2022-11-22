@@ -1,0 +1,396 @@
+ version: 2
+
+sources:
+  - name: sql_server__dbo
+    description: "Fuente ingestada desde SQL server"
+    database: |  
+        {%- if  target.name == 'user_dev' -%} dev_bronze_db_alumno_16 
+        {%- elif target.name == 'ci' -%} dev_bronze_db_alumno_16 
+        {%- elif target.name == 'pro'-%} pro_bronze_db_alumno_16  
+        {%- else -%} {{target.database}}_bronze_db_alumno_16 
+        {%- endif -%}
+
+    quoting:
+      database: false
+      schema: false
+      identifier: false
+
+    freshness:
+      warn_after: {count: 24, period: hour}
+      error_after: {count: 48, period: hour}
+    tables:
+      - name: addresses
+        loaded_at_field: _fivetran_synced
+        description: "Dirección de cada usuario."
+        columns:
+          - name: address_id
+            description: "UUID para cada dirección."
+            tests:
+              - unique
+              - not_null
+          - name: state
+            description: "Estado en el que se encuentra la dirección."
+            tests:
+              - not_null
+          - name: country
+            description: "País en el que se encuentra la dirección."
+            tests:
+              - not_null 
+              - accepted_values:
+                  values: ["United States"] 
+          - name: zipcode
+            description: "Código postal de la dirección."
+            tests:
+              - not_null
+              - positive_values
+          - name: address
+            description: "Calle, número, portal..."
+            tests:
+              - not_null
+          - name: _fivetran_deleted
+            description: "Borrado en la fuente (boolean)."
+            tests:
+              - not_null
+              - accepted_values:
+                  values: ["TRUE" , "FALSE"] 
+          - name: _fivetran_synced
+            description: "Fecha en la que los datos fueron cargados."
+            tests:
+              - not_null 
+
+      - name: events
+        loaded_at_field: _fivetran_synced
+        description: "Interacciones en la web."
+        columns:
+          - name: event_id
+            description: "UUID para cada evento."
+            tests:
+              - unique
+              - not_null
+          - name: event_type
+            description: "Tipo de evento sucedido en la web."
+            tests:
+              - not_null
+              - accepted_values:
+                  values: ["page_view","add_to_cart","package_shipped","checkout"] 
+          - name: user_id
+            description: "UUID para cada usuario."
+            tests:
+              - not_null
+              - relationships:
+                  to: source('sql_server__dbo','users')
+                  field: user_id
+          - name: product_id
+            description: "UUID para cada producto."
+            tests:
+              - not_null
+          - name: page_url
+            description: "Dirección web."
+            tests:
+              - not_null
+          - name: session_id
+            description: "Usuario de la web que realiza la interacción."
+            tests:
+              - not_null
+          - name: created_at
+            description: "Fecha en la que se registra el dato"
+            tests:
+              - not_null
+          - name: order_id
+            description: "UUID para cada pedido."
+            tests:
+              - not_null
+          - name: _fivetran_deleted
+            description: "Borrado en la fuente (boolean)."
+            tests:
+              - not_null
+              - accepted_values:
+                  values: ["TRUE" , "FALSE"] 
+          - name: _fivetran_synced
+            description: "Fecha en la que los datos fueron cargados."
+            tests:
+              - not_null
+
+      - name: fivetran_audit
+        loaded_at_field: _fivetran_synced
+        description: "Tabla con información a cerca de la ingesta desde FiveTran (Actualización  o inserción de registros)."
+        columns:
+          - name: id
+            description: "UUID para cada registro de esta tabla."
+            tests:
+              - unique
+              - not_null
+          - name: message
+            description: "Información adicional sobre la ingesta."
+          - name: update_started
+            description: "Fecha y hora en la que se lanzó la actualización o inserción de registros."
+            tests:
+              - not_null
+          - name: update_id
+            description: "UUID para cada actualización o inserción de registros."
+            tests:
+              - not_null
+          - name: schema
+            description: "Esquema de la BD en el que se realizó la actualización o inserción de registros."
+            tests:
+              - accepted_values: 
+                  values: ['sql_server__dbo']
+              - not_null
+          - name: table
+            description: "Tabla en el que se realizó la actualización o inserción de registros."
+          - name: start
+            description: "Fecha y hora en la que comenzó a ejecutarse la actualización o inserción de registros."
+          - name: done
+            description: "Fecha y hora en la que finalizó la actualización o inserción de registros."
+            tests:
+              - not_null
+          - name: rows_updated_or_inserted
+            description: "Número de filas insertadas o actualizadas."
+            tests:
+              - not_null
+              - positive_values
+          - name: status
+            description: "Estado de la inserción o inserción de registros."
+            tests:
+              - not_null
+          - name: progress
+            description: "Fecha y hora en la que se lanzó la actualización o inserción de registros."
+            tests:
+              - not_null
+          - name: _fivetran_synced
+            description: "Fecha en la que los datos fueron cargados."
+            tests:
+              - not_null
+
+      - name: order_items
+        loaded_at_field: _fivetran_synced
+        description: "Relación entre pedidos y productos."
+        columns:
+          - name: order_id
+            description: "UUID para cada pedido"
+            tests:
+              - not_null
+              - relationships:
+                  to: source('sql_server__dbo','orders')
+                  field: order_id
+          - name: product_id
+            description: "UUID para cada producto"
+            tests:
+              - not_null
+              - relationships:
+                  to: source('sql_server__dbo','products')
+                  field: product_id
+          - name: quantity
+            description: "Cantida pedida de cada producto"
+            tests:
+              - not_null
+              - positive_values
+          - name: _fivetran_deleted
+            description: "Borrado en la fuente (boolean)."
+            tests:
+              - not_null
+              - accepted_values:
+                  values: ["TRUE" , "FALSE"] 
+          - name: _fivetran_synced
+            description: "Fecha en la que los datos fueron cargados."
+            tests:
+              - not_null 
+
+      - name: orders
+        loaded_at_field: _fivetran_synced
+        description: "Información a cerca de cada pedido."
+        columns:
+          - name: order_id
+            description: "UUID para cada pedido"
+            tests:
+              - not_null
+              - unique 
+          - name: shipping_service
+            description: "Compañía que realiza en envío."
+            tests:
+              - not_null
+              - accepted_values:
+                  values: ['ups','usps','fedex','dhl','']
+          - name: promo_id
+            description: "Tipo de promoción aplicada, si la hay."
+            tests:
+              - not_null
+              - accepted_values:
+                  values: ['instruction set','leverage','Mandatory','Optional','task-force','Digitized','']
+          - name: estimated_delivery_at
+            description: "Fecha estimada de entrega del pedido"
+          - name: order_cost
+            description: "Coste del pedido antes de añadir el coste del envío."
+            tests:
+              - not_null
+              - positive_values
+          - name: order_total
+            description: "Precio total que pagará el cliente, (order_cost+shipping_cost) con la promoción aplicada en caso de tenerla."
+            tests:
+              - not_null
+              - positive_values 
+          - name: user_id
+            description: "UUID para cada usuario."
+            tests:
+              - not_null
+              - relationships:
+                  to: source('sql_server__dbo','users')
+                  field: user_id
+          - name: status
+            description: "Estado del envío."
+            tests:
+              - not_null
+              - accepted_values:
+                  values: ['delivered','preparing','shipped']
+          - name: address_id
+            description: "UUID para cada dirección a la que se enviará el pedido."
+            tests:
+              - not_null
+              - relationships:
+                  to: source('sql_server__dbo','addresses')
+                  field: address_id
+          - name: shipping_cost
+            description: "Coste del envío"
+            tests:
+              - not_null
+              - positive_values
+          - name: delivered_at
+            description: "Fecha en la que se entregó el envío."
+          - name: tracking_id
+            description: "Identificador del envío."
+            tests:
+              - not_null
+          - name: created_at
+            description: "Fecha en la que se realizó el pedido."
+            tests:
+              - not_null
+          - name: _fivetran_deleted
+            description: "Borrado en la fuente (boolean)."
+            tests:
+              - not_null
+              - accepted_values:
+                  values: ["TRUE" , "FALSE"] 
+          - name: _fivetran_synced
+            description: "Fecha en la que los datos fueron cargados."
+            tests:
+              - not_null 
+
+      - name: products
+        loaded_at_field: _fivetran_synced
+        description: "Información a cerca de cada producto."
+        columns:
+          - name: product_id
+            description: "UUID para cada producto"
+            tests:
+              - not_null
+              - unique
+          - name: name
+            description: "Nombre del producto."
+            tests:
+              - not_null
+          - name: price
+            description: "Precio unitario del producto."
+            tests:
+              - not_null
+              - positive_values
+          - name: inventory
+            description: "Cantidad del producto disponible para su venta."
+            tests:
+              - not_null
+              - positive_values
+          - name: _fivetran_deleted
+            description: "Borrado en la fuente (boolean)."
+            tests:
+              - not_null
+              - accepted_values:
+                  values: ["TRUE" , "FALSE"] 
+          - name: _fivetran_synced
+            description: "Fecha en la que los datos fueron cargados."
+            tests:
+              - not_null 
+
+      - name: promos
+        loaded_at_field: _fivetran_synced
+        description: "Información sobre las promociones."
+        columns:
+          - name: promo_id
+            description: "Tipo de promoción aplicada, si la hay."
+            tests:
+              - unique
+              - not_null
+              - accepted_values:
+                  values: ['instruction set','leverage','Mandatory','Optional','task-force','Digitized','']
+          - name: status
+            description: "Estado de la promoción (activa o inactiva)."
+            tests:
+              - not_null
+              - accepted_values:
+                  values: ['inactive','active']
+          - name: discount
+            description: "Cantidad descontada según la promoción."
+            tests:
+              - not_null
+              - positive_values
+          - name: _fivetran_deleted
+            description: "Borrado en la fuente (boolean)."
+            tests:
+              - not_null
+              - accepted_values:
+                  values: ["TRUE" , "FALSE"] 
+          - name: _fivetran_synced
+            description: "Fecha en la que los datos fueron cargados."
+            tests:
+              - not_null 
+
+      - name: users
+        loaded_at_field: _fivetran_synced
+        description: ""
+        columns:
+          - name: user_id
+            description: "UUID para cada usuario."
+            tests:
+              - unique
+              - not_null
+          - name: email
+            description: "Correo electrónico de cada usuario."
+            tests:
+              - not_null
+          - name: address_id
+            description: "UUID para cada dirección de usuario."
+            tests:
+              - not_null
+              - relationships:
+                  to: source('sql_server__dbo','addresses')
+                  field: address_id
+          - name: phone_number
+            description: "Teléfono de contacto de cada usuario"
+            tests:
+              - not_null
+          - name: first_name
+            description: "Nombre del usuario."
+            tests:
+              - not_null
+          - name: total_orders
+            description: "Cantidad de pedidos realizados."
+          - name: created_at
+            description: "Fecha en la que se generó el registro del usuario."
+            tests:
+              - not_null
+          - name: updated_at
+            description: "Fecha en la que se actualizó la información del usuario (normalmente direcciones o teléfono de contacto)."
+            tests:
+              - not_null
+          - name: last_name
+            description: "Primer apellido del usuario."
+            tests:
+              - not_null
+          - name: _fivetran_deleted
+            description: "Borrado en la fuente (boolean)."
+            tests:
+              - not_null
+              - accepted_values:
+                  values: ["TRUE" , "FALSE"] 
+          - name: _fivetran_synced
+            description: "Fecha en la que los datos fueron cargados."
+            tests:
+              - not_null 
