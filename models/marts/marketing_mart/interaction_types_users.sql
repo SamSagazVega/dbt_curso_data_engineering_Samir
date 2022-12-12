@@ -1,7 +1,7 @@
 {% set event_types = ["checkout", "package_shipped", "add_to_cart","page_view"] %}
 WITH stg_events AS (
     SELECT * 
-    FROM {{ ref('stg_sql_server_dbo_events') }}
+    FROM {{ ref('stg_sql_server__dbo_events') }}
     ),
 
 renamed_casted AS (

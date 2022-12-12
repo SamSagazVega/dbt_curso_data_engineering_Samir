@@ -1,0 +1,35 @@
+version: 2
+
+models:
+  - name: stg_sql_server__dbo_order_items
+    description: "Relación entre pedidos y productos."
+    columns:
+      - name: order_items_id
+        description: "UUID para cada relación entre un pedido y un producto."
+        tests :
+          - not_null
+          - unique
+          - dbt_expectations.expect_column_values_to_be_of_type :
+              column_type : varchar
+      - name: order_id
+        description: "UUID para cada pedido."
+        tests:
+          - relationships:
+              to: ref('stg_sql_server__dbo_orders')
+              field: order_id
+
+      - name: product_id
+        description: "UUID para cada producto."
+        tests:
+          - relationships:
+              to: ref('stg_sql_server__dbo_products')
+              field: product_id
+
+      - name: quantity
+        description: "Cantida pedida de cada producto."
+
+      - name: deleted
+        description: "Borrado en la fuente (boolean)."
+
+      - name: date_load_utc
+        description: "Fecha en la que los datos fueron cargados."

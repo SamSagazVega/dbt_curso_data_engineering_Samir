@@ -4,30 +4,22 @@ with source as (
 
 ),
 
-renamed as (
+renamed_casted as (
 
     select
+        {{ dbt_utils.surrogate_key([
+                'order_id', 
+                'product_id'
+            ])
+        }} as order_items_id,
         order_id,
         product_id,
         quantity,
-        _fivetran_deleted,
-        _fivetran_synced
+        _fivetran_deleted as deleted,
+        _fivetran_synced as date_load_utc
 
     from source
 
 )
 
-select 
- {{ dbt_utils.surrogate_key([
-                'order_id', 
-                'product_id'
-            ])
-        }} as order_items_id,
-
-order_id,
-product_id,
-quantity,
-_fivetran_deleted,
-_fivetran_synced      
-
- from renamed
+select * from renamed_casted

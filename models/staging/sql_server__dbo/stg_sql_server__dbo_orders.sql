@@ -8,20 +8,21 @@ renamed as (
 
     select
         order_id,
-        shipping_service,
-        promo_id,
-        estimated_delivery_at,
-        order_cost,
-        order_total,
+        created_at as created_at_utc,
         user_id,
-        status,
         address_id,
-        shipping_cost,
-        delivered_at,
+        shipping_service,
+        shipping_cost as shipping_cost_usd,
+        order_cost as order_cost_usd,
+        order_total as order_total_usd,
+        promo_id as promo_type,
+        estimated_delivery_at as estimated_delivery_at_utc,
+        delivered_at as delivered_at_utc,
         tracking_id,
-        created_at,
-        _fivetran_deleted,
-        _fivetran_synced
+        status,
+        _fivetran_deleted as deleted,
+        _fivetran_synced as date_load_utc
+        
 
     from source
 

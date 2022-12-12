@@ -4,19 +4,19 @@ with source as (
 
 ),
 
-renamed as (
+renamed_casted as (
 
     select
         address_id,
-        state,
-        country,
-        zipcode,
         address,
-        _fivetran_deleted,
-        _fivetran_synced
+        state,
+        zipcode,
+        country,
+        _fivetran_deleted as deleted,
+        _fivetran_synced as date_load_utc
 
     from source
 
 )
 
-select * from renamed
+select * from renamed_casted

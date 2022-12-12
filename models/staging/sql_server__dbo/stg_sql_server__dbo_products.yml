@@ -1,0 +1,23 @@
+version: 2
+
+models:
+  - name: stg_sql_server__dbo_products
+    description: "Información a cerca de cada producto."
+    columns:
+      - name: product_id
+        description: "UUID para cada producto"
+
+      - name: product_name
+        description: "Nombre del producto."
+
+      - name: price_usd
+        description: "Precio unitario del producto."
+
+      - name: inventory
+        description: "Cantidad del producto disponible para su venta."
+
+      - name: deleted
+        description: "Borrado en la fuente (boolean)."
+
+      - name: date_load_utc
+        description: "Fecha en la que los datos fueron cargados."

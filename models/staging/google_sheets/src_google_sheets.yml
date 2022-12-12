@@ -34,6 +34,8 @@ sources:
               - not_null
               - unique
               - positive_values
+              - dbt_expectations.expect_column_values_to_be_of_type :
+                  column_type: number
           - name: product_id
             description: >
               UUID para cada producto de la plataforma.
@@ -42,19 +44,27 @@ sources:
               - relationships:
                   to: source('sql_server__dbo','products')
                   field: product_id
+              - dbt_expectations.expect_column_values_to_be_of_type :
+                  column_type: varchar
           - name: quantity
             description: >
               Numero de unidades por producto y mes (febrero y marzo).
             tests:
               - not_null
               - positive_values
+              - dbt_expectations.expect_column_values_to_be_of_type :
+                  column_type: number
           - name: month
             description: >
               Cada mes para el presupuesto.
             tests:
               - not_null
+              - dbt_expectations.expect_column_values_to_be_of_type :
+                  column_type: date
           - name: _fivetran_synced
             description: >
               Fecha en la que los datos fueron cargados.
             tests:
               - not_null
+              - dbt_expectations.expect_column_values_to_be_of_type :
+                  column_type: timestamp_tz

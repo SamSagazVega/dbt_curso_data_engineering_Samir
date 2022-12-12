@@ -8,16 +8,15 @@ renamed as (
 
     select
         user_id,
-        email,
         address_id,
-        phone_number,
         first_name,
-        total_orders,
-        created_at,
-        updated_at,
         last_name,
-        _fivetran_deleted,
-        _fivetran_synced
+        email,
+        phone_number,
+        created_at as created_at_utc,
+        updated_at as updated_at_utc,
+        _fivetran_deleted as deleted,
+        _fivetran_synced as date_load_utc
 
     from source
 

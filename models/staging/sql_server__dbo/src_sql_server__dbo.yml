@@ -28,35 +28,49 @@ sources:
             tests:
               - unique
               - not_null
+              - dbt_expectations.expect_column_values_to_be_of_type :
+                  column_type : varchar
           - name: state
             description: "Estado en el que se encuentra la dirección."
             tests:
               - not_null
+              - dbt_expectations.expect_column_values_to_be_of_type :
+                  column_type : varchar
           - name: country
-            description: "País en el que se encuentra la dirección."
+            description: "País en el que se encuentra la dirección. En principio solo EEUU."
             tests:
               - not_null 
               - accepted_values:
                   values: ["United States"] 
+              - dbt_expectations.expect_column_values_to_be_of_type :
+                  column_type : varchar
           - name: zipcode
             description: "Código postal de la dirección."
             tests:
               - not_null
               - positive_values
+              - dbt_expectations.expect_column_values_to_be_of_type :
+                  column_type : number
           - name: address
             description: "Calle, número, portal..."
             tests:
               - not_null
+              - dbt_expectations.expect_column_values_to_be_of_type :
+                  column_type : varchar
           - name: _fivetran_deleted
-            description: "Borrado en la fuente (boolean)."
+            description: "Indica si fue borrado en la fuente (boolean)."
             tests:
               - not_null
               - accepted_values:
                   values: ["TRUE" , "FALSE"] 
+              - dbt_expectations.expect_column_values_to_be_of_type :
+                  column_type : boolean
           - name: _fivetran_synced
             description: "Fecha en la que los datos fueron cargados."
             tests:
-              - not_null 
+              - not_null
+              - dbt_expectations.expect_column_values_to_be_of_type :
+                  column_type : timestamp_tz
 
       - name: events
         loaded_at_field: _fivetran_synced
@@ -67,12 +81,16 @@ sources:
             tests:
               - unique
               - not_null
+              - dbt_expectations.expect_column_values_to_be_of_type :
+                  column_type : varchar
           - name: event_type
             description: "Tipo de evento sucedido en la web."
             tests:
               - not_null
               - accepted_values:
                   values: ["page_view","add_to_cart","package_shipped","checkout"] 
+              - dbt_expectations.expect_column_values_to_be_of_type :
+                  column_type : varchar
           - name: user_id
             description: "UUID para cada usuario."
             tests:
@@ -80,36 +98,52 @@ sources:
               - relationships:
                   to: source('sql_server__dbo','users')
                   field: user_id
+              - dbt_expectations.expect_column_values_to_be_of_type :
+                  column_type : varchar
           - name: product_id
             description: "UUID para cada producto."
             tests:
               - not_null
+              - dbt_expectations.expect_column_values_to_be_of_type :
+                  column_type : varchar
           - name: page_url
             description: "Dirección web."
             tests:
               - not_null
+              - dbt_expectations.expect_column_values_to_be_of_type :
+                  column_type : varchar
           - name: session_id
             description: "Usuario de la web que realiza la interacción."
             tests:
               - not_null
+              - dbt_expectations.expect_column_values_to_be_of_type :
+                  column_type : varchar
           - name: created_at
             description: "Fecha en la que se registra el dato"
             tests:
               - not_null
+              - dbt_expectations.expect_column_values_to_be_of_type :
+                  column_type : timestamp_ntz
           - name: order_id
             description: "UUID para cada pedido."
             tests:
               - not_null
+              - dbt_expectations.expect_column_values_to_be_of_type :
+                  column_type : varchar
           - name: _fivetran_deleted
             description: "Borrado en la fuente (boolean)."
             tests:
               - not_null
               - accepted_values:
                   values: ["TRUE" , "FALSE"] 
+              - dbt_expectations.expect_column_values_to_be_of_type :
+                  column_type : boolean
           - name: _fivetran_synced
             description: "Fecha en la que los datos fueron cargados."
             tests:
               - not_null
+              - dbt_expectations.expect_column_values_to_be_of_type :
+                  column_type : timestamp_tz
 
       - name: fivetran_audit
         loaded_at_field: _fivetran_synced
@@ -173,6 +207,8 @@ sources:
               - relationships:
                   to: source('sql_server__dbo','orders')
                   field: order_id
+              - dbt_expectations.expect_column_values_to_be_of_type :
+                  column_type : varchar
           - name: product_id
             description: "UUID para cada producto"
             tests:
@@ -180,23 +216,36 @@ sources:
               - relationships:
                   to: source('sql_server__dbo','products')
                   field: product_id
+              - dbt_expectations.expect_column_values_to_be_of_type :
+                  column_type : varchar
           - name: quantity
             description: "Cantida pedida de cada producto"
             tests:
               - not_null
               - positive_values
+              - dbt_expectations.expect_column_values_to_be_of_type :
+                  column_type : number
           - name: _fivetran_deleted
             description: "Borrado en la fuente (boolean)."
             tests:
               - not_null
               - accepted_values:
                   values: ["TRUE" , "FALSE"] 
+              - dbt_expectations.expect_column_values_to_be_of_type :
+                  column_type : boolean
           - name: _fivetran_synced
             description: "Fecha en la que los datos fueron cargados."
             tests:
               - not_null 
+              - dbt_expectations.expect_column_values_to_be_of_type :
+                  column_type : timestamp_tz
 
       - name: orders
+        tests:
+          - dbt_utils.expression_is_true: 
+                    expression: "estimated_delivery_at > created_at"
+          - dbt_utils.expression_is_true: 
+                    expression: "delivered_at > created_at"
         loaded_at_field: _fivetran_synced
         description: "Información a cerca de cada pedido."
         columns:
@@ -205,30 +254,43 @@ sources:
             tests:
               - not_null
               - unique 
+              - dbt_expectations.expect_column_values_to_be_of_type :
+                  column_type : varchar
           - name: shipping_service
             description: "Compañía que realiza en envío."
             tests:
               - not_null
               - accepted_values:
                   values: ['ups','usps','fedex','dhl','']
+              - dbt_expectations.expect_column_values_to_be_of_type :
+                  column_type : varchar
           - name: promo_id
             description: "Tipo de promoción aplicada, si la hay."
             tests:
               - not_null
               - accepted_values:
                   values: ['instruction set','leverage','Mandatory','Optional','task-force','Digitized','']
+              - dbt_expectations.expect_column_values_to_be_of_type :
+                  column_type : varchar
           - name: estimated_delivery_at
             description: "Fecha estimada de entrega del pedido"
+            tests:
+              - dbt_expectations.expect_column_values_to_be_of_type :
+                  column_type : timestamp_tz
           - name: order_cost
             description: "Coste del pedido antes de añadir el coste del envío."
             tests:
               - not_null
               - positive_values
+              - dbt_expectations.expect_column_values_to_be_of_type :
+                  column_type : float
           - name: order_total
             description: "Precio total que pagará el cliente, (order_cost+shipping_cost) con la promoción aplicada en caso de tenerla."
             tests:
               - not_null
               - positive_values 
+              - dbt_expectations.expect_column_values_to_be_of_type :
+                  column_type : float
           - name: user_id
             description: "UUID para cada usuario."
             tests:
@@ -236,12 +298,16 @@ sources:
               - relationships:
                   to: source('sql_server__dbo','users')
                   field: user_id
+              - dbt_expectations.expect_column_values_to_be_of_type :
+                  column_type : varchar
           - name: status
             description: "Estado del envío."
             tests:
               - not_null
               - accepted_values:
                   values: ['delivered','preparing','shipped']
+              - dbt_expectations.expect_column_values_to_be_of_type :
+                  column_type : varchar
           - name: address_id
             description: "UUID para cada dirección a la que se enviará el pedido."
             tests:
@@ -249,31 +315,42 @@ sources:
               - relationships:
                   to: source('sql_server__dbo','addresses')
                   field: address_id
+              - dbt_expectations.expect_column_values_to_be_of_type :
+                  column_type : varchar
           - name: shipping_cost
             description: "Coste del envío"
             tests:
               - not_null
               - positive_values
+              - dbt_expectations.expect_column_values_to_be_of_type :
+                  column_type : float
           - name: delivered_at
             description: "Fecha en la que se entregó el envío."
           - name: tracking_id
             description: "Identificador del envío."
             tests:
               - not_null
+              - dbt_expectations.expect_column_values_to_be_of_type :
+                  column_type : varchar
           - name: created_at
             description: "Fecha en la que se realizó el pedido."
             tests:
               - not_null
+              - dbt_expectations.expect_column_values_to_be_of_type :
+                  column_type : timestamp_tz
           - name: _fivetran_deleted
             description: "Borrado en la fuente (boolean)."
             tests:
-              - not_null
               - accepted_values:
                   values: ["TRUE" , "FALSE"] 
+              - dbt_expectations.expect_column_values_to_be_of_type :
+                  column_type : boolean
           - name: _fivetran_synced
             description: "Fecha en la que los datos fueron cargados."
             tests:
               - not_null 
+              - dbt_expectations.expect_column_values_to_be_of_type :
+                  column_type : timestamp_tz
 
       - name: products
         loaded_at_field: _fivetran_synced
@@ -284,30 +361,42 @@ sources:
             tests:
               - not_null
               - unique
+              - dbt_expectations.expect_column_values_to_be_of_type :
+                  column_type : varchar
           - name: name
             description: "Nombre del producto."
             tests:
               - not_null
+              - dbt_expectations.expect_column_values_to_be_of_type :
+                  column_type : varchar
           - name: price
             description: "Precio unitario del producto."
             tests:
               - not_null
               - positive_values
+              - dbt_expectations.expect_column_values_to_be_of_type :
+                  column_type : float
           - name: inventory
             description: "Cantidad del producto disponible para su venta."
             tests:
               - not_null
               - positive_values
+              - dbt_expectations.expect_column_values_to_be_of_type :
+                  column_type : number
           - name: _fivetran_deleted
             description: "Borrado en la fuente (boolean)."
             tests:
               - not_null
               - accepted_values:
                   values: ["TRUE" , "FALSE"] 
+              - dbt_expectations.expect_column_values_to_be_of_type :
+                  column_type : boolean
           - name: _fivetran_synced
             description: "Fecha en la que los datos fueron cargados."
             tests:
               - not_null 
+              - dbt_expectations.expect_column_values_to_be_of_type :
+                  column_type : timestamp_tz
 
       - name: promos
         loaded_at_field: _fivetran_synced
@@ -316,45 +405,58 @@ sources:
           - name: promo_id
             description: "Tipo de promoción aplicada, si la hay."
             tests:
-              - unique
               - not_null
               - accepted_values:
                   values: ['instruction set','leverage','Mandatory','Optional','task-force','Digitized','']
+              - dbt_expectations.expect_column_values_to_be_of_type :
+                  column_type : varchar
           - name: status
             description: "Estado de la promoción (activa o inactiva)."
             tests:
               - not_null
               - accepted_values:
                   values: ['inactive','active']
+              - dbt_expectations.expect_column_values_to_be_of_type :
+                  column_type : varchar
           - name: discount
             description: "Cantidad descontada según la promoción."
             tests:
               - not_null
               - positive_values
+              - dbt_expectations.expect_column_values_to_be_of_type :
+                  column_type : number
           - name: _fivetran_deleted
             description: "Borrado en la fuente (boolean)."
             tests:
               - not_null
               - accepted_values:
                   values: ["TRUE" , "FALSE"] 
+              - dbt_expectations.expect_column_values_to_be_of_type :
+                  column_type : boolean
           - name: _fivetran_synced
             description: "Fecha en la que los datos fueron cargados."
             tests:
               - not_null 
+              - dbt_expectations.expect_column_values_to_be_of_type :
+                  column_type : timestamp_tz
 
       - name: users
         loaded_at_field: _fivetran_synced
-        description: ""
+        description: "Información detallaada sobre los clientes o usuarios de la web."
         columns:
           - name: user_id
             description: "UUID para cada usuario."
             tests:
               - unique
               - not_null
+              - dbt_expectations.expect_column_values_to_be_of_type :
+                  column_type : varchar
           - name: email
             description: "Correo electrónico de cada usuario."
             tests:
               - not_null
+              - dbt_expectations.expect_column_values_to_be_of_type :
+                  column_type : varchar
           - name: address_id
             description: "UUID para cada dirección de usuario."
             tests:
@@ -362,35 +464,51 @@ sources:
               - relationships:
                   to: source('sql_server__dbo','addresses')
                   field: address_id
+              - dbt_expectations.expect_column_values_to_be_of_type :
+                  column_type : varchar
           - name: phone_number
             description: "Teléfono de contacto de cada usuario"
             tests:
               - not_null
+              - dbt_expectations.expect_column_values_to_be_of_type :
+                  column_type : varchar
           - name: first_name
             description: "Nombre del usuario."
             tests:
               - not_null
+              - dbt_expectations.expect_column_values_to_be_of_type :
+                  column_type : varchar
           - name: total_orders
             description: "Cantidad de pedidos realizados."
           - name: created_at
             description: "Fecha en la que se generó el registro del usuario."
             tests:
               - not_null
+              - dbt_expectations.expect_column_values_to_be_of_type :
+                  column_type : timestamp_ntz
           - name: updated_at
             description: "Fecha en la que se actualizó la información del usuario (normalmente direcciones o teléfono de contacto)."
             tests:
               - not_null
+              - dbt_expectations.expect_column_values_to_be_of_type :
+                  column_type : timestamp_ntz
           - name: last_name
             description: "Primer apellido del usuario."
             tests:
               - not_null
+              - dbt_expectations.expect_column_values_to_be_of_type :
+                  column_type : varchar
           - name: _fivetran_deleted
             description: "Borrado en la fuente (boolean)."
             tests:
               - not_null
               - accepted_values:
                   values: ["TRUE" , "FALSE"] 
+              - dbt_expectations.expect_column_values_to_be_of_type :
+                  column_type : boolean
           - name: _fivetran_synced
             description: "Fecha en la que los datos fueron cargados."
             tests:
               - not_null 
+              - dbt_expectations.expect_column_values_to_be_of_type :
+                  column_type : timestamp_tz

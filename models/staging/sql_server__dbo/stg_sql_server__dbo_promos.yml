@@ -1,0 +1,21 @@
+version: 2
+
+models:
+  - name: stg_sql_server__dbo_promos
+    description: ""
+    columns:
+
+      - name: promo_type
+        description: "Tipo de promoción aplicada, si la hay."
+
+      - name: status
+        description: "Estado de la promoción (activa o inactiva)."
+
+      - name: discount_usd
+        description: "Cantidad descontada según la promoción."
+
+      - name: deleted
+        description: "Fecha de borrado en la fuente (boolean)."
+
+      - name: date_load_utc
+        description: "Fecha en la que los datos fueron cargados."

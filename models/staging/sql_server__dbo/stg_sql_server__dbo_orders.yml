@@ -1,0 +1,58 @@
+version: 2
+
+models:
+  - name: stg_sql_server__dbo_orders
+    description: "Información detallada a cerca de cada pedido."
+    columns:
+      - name: order_id
+        description: "UUID para cada pedido."
+
+      - name: created_at_utc
+        description: "Fecha en la que se realizó el pedido."
+
+      - name: user_id
+        description: "UUID para cada usuario."
+        tests:
+          - relationships:
+              to: ref('stg_sql_server__dbo_users')
+              field: user_id
+
+      - name: address_id
+        description: "UUID para cada dirección a la que se enviará el pedido."
+        tests:
+          - relationships:
+              to: ref('stg_sql_server__dbo_addresses')
+              field: address_id
+
+      - name: shipping_service
+        description: "Compañía que realiza en envío."
+
+      - name: shipping_cost_usd
+        description: "Coste del envío"
+
+      - name: order_cost_usd
+        description: "Coste del pedido antes de añadir el coste del envío."
+
+      - name: order_total_usd
+        description: "Precio total que pagará el cliente, (order_cost+shipping_cost) con la promoción aplicada en caso de tenerla."
+
+      - name: promo_id
+        description: "Tipo de promoción aplicada, si la hay."
+
+      - name: estimated_delivery_at_utc
+        description: "Fecha estimada de entrega del pedido"
+
+      - name: delivered_at_utc
+        description: "Fecha en la que se entregó el envío."
+
+      - name: tracking_id
+        description: "Identificador del envío."
+
+      - name: status
+        description: "Estado del envío."
+
+      - name: deleted
+        description: "Borrado en la fuente (boolean)."
+
+      - name: date_load_utc
+        description: "Fecha en la que los datos fueron cargados."
