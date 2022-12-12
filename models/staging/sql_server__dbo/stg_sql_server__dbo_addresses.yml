@@ -1,0 +1,26 @@
+version: 2
+
+models:
+  - name: stg_sql_server__dbo_addresses
+    description: "Dirección de cada usuario."
+    columns:
+      - name: address_id
+        description: "UUID para cada dirección."
+
+      - name: address
+        description: "Calle, número, portal..."
+        
+      - name: state
+        description: "Estado en el que se encuentra la dirección."
+        
+      - name: country
+        description: "País en el que se encuentra la dirección. En principio solo EEUU."
+        
+      - name: zipcode
+        description: "Código postal de la dirección."
+        
+      - name: deleted
+        description: "Indica si fue borrado en la fuente (boolean)."
+        
+      - name: date_load_utc
+        description: "Fecha en la que los datos fueron cargados."

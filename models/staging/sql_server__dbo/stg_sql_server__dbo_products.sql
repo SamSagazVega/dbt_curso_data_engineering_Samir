@@ -8,11 +8,11 @@ renamed as (
 
     select
         product_id,
-        name,
-        price,
+        name as product_name,
+        price as price_usd,
         inventory,
-        _fivetran_deleted,
-        _fivetran_synced
+        _fivetran_deleted as deleted,
+        _fivetran_synced as date_load_utc
 
     from source
 

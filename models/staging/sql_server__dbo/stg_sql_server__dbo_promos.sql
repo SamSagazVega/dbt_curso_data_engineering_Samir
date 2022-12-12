@@ -4,17 +4,17 @@ with source as (
 
 ),
 
-renamed as (
+renamed_casted as (
 
     select
-        promo_id,
+        promo_id as promo_type,
         status,
-        discount,
-        _fivetran_deleted,
-        _fivetran_synced
+        discount as discount_usd,
+        _fivetran_deleted as deleted,
+        _fivetran_synced as date_load_utc
 
     from source
 
 )
 
-select * from renamed
+select * from renamed_casted

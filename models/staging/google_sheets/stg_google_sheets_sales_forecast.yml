@@ -1,0 +1,33 @@
+ version: 2
+
+models:
+  - name: stg_google_sheets_sales_forecast
+    description: "Datos sobre el presupuesto."
+    columns:
+      - name: sales_forecast_id
+        description: "UUID para el presupuesto de cada producto por mes."
+        tests:
+          - not_null
+          - unique
+          - dbt_expectations.expect_column_values_to_be_of_type :
+              column_type: varchar
+      - name: natural_id
+        description: "Identificador proveniente de la fuente."
+        
+      - name: product_id
+        description: "UUID para cada producto de la plataforma."
+        tests:
+          - relationships:
+              to: ref('stg_sql_server__dbo_products')
+              field: product_id
+      - name: quantity
+        description: "Numero de unidades por producto y mes (febrero y marzo)."
+
+      - name: year_month_id
+        description: "Cada mes para el presupuesto."
+        tests:
+          - not_null
+          - dbt_expectations.expect_column_values_to_be_of_type :
+              column_type: varchar     
+      - name: date_load
+        description: "Fecha en la que los datos fueron cargados."

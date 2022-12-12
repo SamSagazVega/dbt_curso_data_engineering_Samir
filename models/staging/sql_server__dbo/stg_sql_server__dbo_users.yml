@@ -1,0 +1,38 @@
+version: 2
+
+models:
+  - name: stg_sql_server__dbo_users
+    description: "Información detallaada sobre los clientes o usuarios de la web."
+    columns:
+      - name: user_id
+        description: "UUID para cada usuario."
+
+      - name: address_id
+        description: "UUID para cada dirección de usuario."
+        tests:
+          - relationships:
+              to: ref('stg_sql_server__dbo_addresses')
+              field: address_id
+      - name: first_name
+        description: "Nombre del usuario."
+
+      - name: last_name
+        description: "Primer apellido del usuario."
+
+      - name: email
+        description: "Correo electrónico de cada usuario."
+
+      - name: phone_number
+        description: "Teléfono de contacto de cada usuario"
+
+      - name: created_at_utc
+        description: "Fecha en la que se generó el registro del usuario."
+
+      - name: updated_at_utc
+        description: "Fecha en la que se actualizó la información del usuario (normalmente direcciones o teléfono de contacto)."
+
+      - name: deleted
+        description: "Fecha de borrado en la fuente (boolean)."
+
+      - name: date_load_utc
+        description: "Fecha en la que los datos fueron cargados."

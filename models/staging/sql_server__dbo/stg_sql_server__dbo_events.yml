@@ -1,0 +1,38 @@
+ version: 2
+
+models:
+  - name: stg_sql_server__dbo_events
+    description: ""
+    columns:
+      - name: event_id
+        description: "UUID para cada evento."
+
+      - name: session_id
+        description: "Usuario de la web que realiza la interacción."
+
+      - name: user_id
+        description: "UUID para cada usuario."
+        tests :
+          - relationships:
+              to: ref('stg_sql_server__dbo_users')
+              field: user_id
+      - name: product_id
+        description: "UUID para cada producto."
+
+      - name: order_id
+        description: "UUID para cada pedido."
+
+      - name: page_url
+        description: "Dirección web."
+
+      - name: event_type
+        description: "Tipo de evento sucedido en la web."
+
+      - name: created_at_utc
+        description: "Fecha en la que se registra el dato"
+
+      - name: deleted
+        description: "Borrado en la fuente (boolean)."
+
+      - name: date_load_utc
+        description: "Fecha en la que los datos fueron cargados."
