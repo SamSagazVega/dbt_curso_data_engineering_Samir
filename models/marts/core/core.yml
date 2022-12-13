@@ -1,0 +1,327 @@
+version: 2
+
+models:
+
+  - name: fact_sales_forecast
+    description: "Datos sobre la previsión de ventas."
+    columns:
+
+      - name: sales_forecast_id
+        description: "UUID para la previsión de ventas de cada producto por mes."
+        
+      - name: product_id
+        description: "UUID para cada producto de la plataforma."
+
+      - name: quantity
+        description: "Numero de unidades por producto y mes (febrero y marzo)."
+
+      - name: unit_price_usd
+        description: "Precio unitario de cada producto."
+
+      - name: sale_forecast_usd
+        description: "Previsión de ventas en dolares por producto y mes."
+
+      - name: year_month_id
+        description: "Cada mes para el presupuesto."
+
+      - name: QUARTER_OF_YEAR
+        description: "Trimestre del año."
+
+      - name: date_load
+        description: "Fecha en la que los datos fueron cargados." 
+
+      - name: DBT_SCD_ID
+        description: "Identificador único que permite diferenciar un dáto actualizado y guardado como histórico." 
+
+      - name: DBT_UPDATED_AT
+        description: "Fecha y hora de actualización de un registro." 
+
+      - name: DBT_VALID_FROM
+        description: "Fecha de inicio de validez de un registro." 
+      
+      - name: DBT_VALID_TO
+        description: "Fecha de fin de validez de un registro." 
+
+
+  - name: dim_shipping_addresses
+    description: "Dirección de cada usuario."
+    columns:
+      - name: address_id
+        description: "UUID para cada dirección."
+
+      - name: address
+        description: "Calle, número, portal..."
+        
+      - name: state
+        description: "Estado en el que se encuentra la dirección."
+        
+      - name: country
+        description: "País en el que se encuentra la dirección. En principio solo EEUU."
+        
+      - name: zipcode
+        description: "Código postal de la dirección."
+        
+      - name: deleted
+        description: "Indica si fue borrado en la fuente (boolean)."
+        
+      - name: date_load_utc
+        description: "Fecha en la que los datos fueron cargados."
+
+      - name: DBT_SCD_ID
+        description: "Identificador único que permite diferenciar un dáto actualizado y guardado como histórico." 
+
+      - name: DBT_UPDATED_AT
+        description: "Fecha y hora de actualización de un registro." 
+
+      - name: DBT_VALID_FROM
+        description: "Fecha de inicio de validez de un registro." 
+      
+      - name: DBT_VALID_TO
+        description: "Fecha de fin de validez de un registro." 
+
+
+  - name: fact_events
+    description: "Información a cerca de las interacciones en la web."
+    columns:
+      - name: event_id
+        description: "UUID para cada evento."
+
+      - name: session_id
+        description: "Usuario de la web que realiza la interacción."
+
+      - name: user_id
+        description: "UUID para cada usuario."
+
+      - name: product_id
+        description: "UUID para cada producto."
+
+      - name: order_id
+        description: "UUID para cada pedido."
+
+      - name: page_url
+        description: "Dirección web."
+
+      - name: event_type
+        description: "Tipo de evento sucedido en la web."
+
+      - name: created_at_utc
+        description: "Fecha en la que se registra el dato"
+
+      - name: deleted
+        description: "Borrado en la fuente (boolean)."
+
+      - name: date_load_utc
+        description: "Fecha en la que los datos fueron cargados."
+
+      - name: DBT_SCD_ID
+        description: "Identificador único que permite diferenciar un dáto actualizado y guardado como histórico." 
+
+      - name: DBT_UPDATED_AT
+        description: "Fecha y hora de actualización de un registro." 
+
+      - name: DBT_VALID_FROM
+        description: "Fecha de inicio de validez de un registro." 
+      
+      - name: DBT_VALID_TO
+        description: "Fecha de fin de validez de un registro." 
+
+
+  - name: fact_order_items
+    description: "Relación entre pedidos y productos."
+    columns:
+      - name: order_items_id
+        description: "UUID para cada relación entre un pedido y un producto."
+
+      - name: order_id
+        description: "UUID para cada pedido."
+
+      - name: product_id
+        description: "UUID para cada producto."
+
+      - name: quantity
+        description: "Cantida pedida de cada producto."
+
+      - name: deleted
+        description: "Borrado en la fuente (boolean)."
+
+      - name: date_load_utc
+        description: "Fecha en la que los datos fueron cargados."
+
+      - name: DBT_SCD_ID
+        description: "Identificador único que permite diferenciar un dáto actualizado y guardado como histórico." 
+
+      - name: DBT_UPDATED_AT
+        description: "Fecha y hora de actualización de un registro." 
+
+      - name: DBT_VALID_FROM
+        description: "Fecha de inicio de validez de un registro." 
+      
+      - name: DBT_VALID_TO
+        description: "Fecha de fin de validez de un registro."
+
+
+  - name: dim_orders
+    description: "Información detallada a cerca de cada pedido."
+    columns:
+      - name: order_id
+        description: "UUID para cada pedido."
+
+      - name: created_at_utc
+        description: "Fecha en la que se realizó el pedido."
+
+      - name: user_id
+        description: "UUID para cada usuario."
+
+      - name: address_id
+        description: "UUID para cada dirección a la que se enviará el pedido."
+
+      - name: shipping_service
+        description: "Compañía que realiza en envío."
+
+      - name: shipping_cost_usd
+        description: "Coste del envío"
+
+      - name: order_cost_usd
+        description: "Coste del pedido antes de añadir el coste del envío."
+
+      - name: order_total_usd
+        description: "Precio total que pagará el cliente, (order_cost+shipping_cost) con la promoción aplicada en caso de tenerla."
+
+      - name: promo_type
+        description: "Tipo de promoción aplicada, si la hay."
+
+      - name: promo_status
+        description: "Estado de la promoción (activa o inactiva)."
+
+      - name: discount_usd
+        description: "Cantidad descontada según la promoción."
+
+      - name: estimated_delivery_at_utc
+        description: "Fecha estimada de entrega del pedido"
+
+      - name: delivered_at_utc
+        description: "Fecha en la que se entregó el envío."
+
+      - name: tracking_id
+        description: "Identificador del envío."
+
+      - name: shipping_status
+        description: "Estado del envío."
+
+      - name: deleted
+        description: "Borrado en la fuente (boolean)."
+
+      - name: date_load_utc
+        description: "Fecha en la que los datos fueron cargados."
+
+      - name: DBT_SCD_ID
+        description: "Identificador único que permite diferenciar un dáto actualizado y guardado como histórico." 
+
+      - name: DBT_UPDATED_AT
+        description: "Fecha y hora de actualización de un registro." 
+
+      - name: DBT_VALID_FROM
+        description: "Fecha de inicio de validez de un registro." 
+      
+      - name: DBT_VALID_TO
+        description: "Fecha de fin de validez de un registro."
+
+
+  - name: dim_products
+    description: "Información a cerca de cada producto."
+    columns:
+      - name: product_id
+        description: "UUID para cada producto"
+
+      - name: product_name
+        description: "Nombre del producto."
+
+      - name: price_usd
+        description: "Precio unitario del producto."
+
+      - name: inventory
+        description: "Cantidad del producto disponible para su venta."
+
+      - name: deleted
+        description: "Borrado en la fuente (boolean)."
+
+      - name: date_load_utc
+        description: "Fecha en la que los datos fueron cargados."
+
+      - name: DBT_SCD_ID
+        description: "Identificador único que permite diferenciar un dáto actualizado y guardado como histórico." 
+
+      - name: DBT_UPDATED_AT
+        description: "Fecha y hora de actualización de un registro." 
+
+      - name: DBT_VALID_FROM
+        description: "Fecha de inicio de validez de un registro." 
+      
+      - name: DBT_VALID_TO
+        description: "Fecha de fin de validez de un registro."
+
+
+  - name: dim_users
+    description: "Información detallaada sobre los clientes o usuarios de la web."
+    columns:
+      - name: user_id
+        description: "UUID para cada usuario."
+
+      - name: address_id
+        description: "UUID para cada dirección de usuario."
+
+      - name: address
+        description: "Calle, número, portal..."
+        
+      - name: state
+        description: "Estado en el que se encuentra la dirección."
+        
+      - name: country
+        description: "País en el que se encuentra la dirección. En principio solo EEUU."
+        
+      - name: zipcode
+        description: "Código postal de la dirección."
+
+      - name: first_name
+        description: "Nombre del usuario."
+
+      - name: last_name
+        description: "Primer apellido del usuario."
+
+      - name: email
+        description: "Correo electrónico de cada usuario."
+
+      - name: phone_number
+        description: "Teléfono de contacto de cada usuario"
+
+      - name: created_at_utc
+        description: "Fecha en la que se generó el registro del usuario."
+
+      - name: updated_at_utc
+        description: "Fecha en la que se actualizó la información del usuario (normalmente direcciones o teléfono de contacto)."
+
+      - name: deleted
+        description: "Fecha de borrado en la fuente (boolean)."
+
+      - name: date_load_utc
+        description: "Fecha en la que los datos fueron cargados."
+
+      - name: DBT_SCD_ID
+        description: "Identificador único que permite diferenciar un dáto actualizado y guardado como histórico." 
+
+      - name: DBT_UPDATED_AT
+        description: "Fecha y hora de actualización de un registro." 
+
+      - name: DBT_VALID_FROM
+        description: "Fecha de inicio de validez de un registro." 
+      
+      - name: DBT_VALID_TO
+        description: "Fecha de fin de validez de un registro."
+
+
+  - name: dim_date
+    description: "Dimensión tiempo con distintos campos para analizar el resto de tablas, granularidad dia."
+
+
+  - name: dim_month
+    description: "Dimensión tiempo con distintos campos para analizar el resto de tablas, granularidad mes."

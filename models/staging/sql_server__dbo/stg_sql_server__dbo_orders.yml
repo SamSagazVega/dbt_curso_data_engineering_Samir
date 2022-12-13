@@ -36,7 +36,7 @@ models:
       - name: order_total_usd
         description: "Precio total que pagará el cliente, (order_cost+shipping_cost) con la promoción aplicada en caso de tenerla."
 
-      - name: promo_id
+      - name: promo_type
         description: "Tipo de promoción aplicada, si la hay."
 
       - name: estimated_delivery_at_utc
