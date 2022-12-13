@@ -2,7 +2,7 @@
 
 models:
   - name: stg_google_sheets_sales_forecast
-    description: "Datos sobre el presupuesto."
+    description: "Datos sobre la previsión de ventas."
     columns:
       - name: sales_forecast_id
         description: "UUID para el presupuesto de cada producto por mes."

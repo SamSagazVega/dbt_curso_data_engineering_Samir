@@ -2,7 +2,7 @@
 
 models:
   - name: stg_sql_server__dbo_events
-    description: ""
+    description: "Información a cerca de las interacciones en la web."
     columns:
       - name: event_id
         description: "UUID para cada evento."
