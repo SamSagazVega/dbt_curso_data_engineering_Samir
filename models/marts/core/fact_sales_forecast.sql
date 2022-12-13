@@ -26,7 +26,6 @@ dim_month AS (
 sales_forecast AS (
     SELECT
         sales_forecast_id
-        , natural_id
         , stg_sales_forecast.product_id
         , quantity
         , stg_products.price_usd as unit_price_usd
